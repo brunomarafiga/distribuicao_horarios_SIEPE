@@ -1,3 +1,12 @@
 test_scoring.py
 update_ensalamento.py
 __pycache__/
+*.csv
+*.xlsx
+*.xls
+*.zip
+Segunda-feira/
+Terça-feira/
+Quarta-feira/
+Quinta-feira/
+Sexta-feira/
