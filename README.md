@@ -25,10 +25,8 @@ O algoritmo de ensalamento (`ensalamento_siepe.py`) foi estruturado para respeit
    ```
 
 ## 📦 Saídas (Entregáveis)
-Como este repositório possui `.gitignore` para dados sensíveis, os artefatos de saída não são versionados. Ao executar o script, os seguintes arquivos serão gerados localmente:
+Como este repositório possui `.gitignore` para dados sensíveis, os artefatos de saída não são versionados. Ao executar o script, apenas um arquivo será gerado localmente:
 
-- `03_Distribuicao_Horarios_SIEPE.zip`: Pacote oficial comprimido contendo a árvore de diretórios (Dia > Sessão > Salas) no formato `.csv` para publicação/distribuição.
-- `ensalamento_curitiba_971.xlsx`: Relatório gerencial em Excel contendo tabelas dinâmicas com os resumos das sessões e o dimensionamento total de salas.
 - `horarios_salas_resumos.csv`: Banco de dados limpo para fácil integração sistêmica (com `Código do Resumo`, `Bloco` e `Área Temática`).
 
 ## ⚙️ Arquitetura (Score-based Allocation)

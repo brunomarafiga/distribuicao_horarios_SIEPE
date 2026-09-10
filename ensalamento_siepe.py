@@ -384,19 +384,7 @@ def gerar_ensalamento(
     outras_colunas = [c for c in df_resultado.columns if c not in colunas_existentes and not c.startswith('Is_') and c != 'Real_City']
     df_resultado_final = df_resultado[colunas_existentes + outras_colunas]
 
-    # Salvar CSV Completo
-    df_resultado_final.to_csv(output_csv, index=False, encoding='utf-8-sig', sep=';')
-    
-    # Salvar Excel Completo
-    ordem_dias = {"Segunda-feira": 1, "Terça-feira": 2, "Quarta-feira": 3, "Quinta-feira": 4, "Sexta-feira": 5}
-    with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-        df_resultado_final.to_excel(writer, sheet_name="Ensalamento Curitiba", index=False)
-        resumo_sessao = df_resultado_final.groupby(['Dia', 'Sessao', 'Turno']).size().reset_index(name='Total_Apresentacoes')
-        resumo_sessao['Dia_Num'] = resumo_sessao['Dia'].map(ordem_dias)
-        resumo_sessao = resumo_sessao.sort_values(by=['Dia_Num', 'Sessao']).drop(columns=['Dia_Num'])
-        resumo_sessao.to_excel(writer, sheet_name="Resumo Sessões", index=False)
-        resumo_salas = df_resultado_final.groupby(['Bloco', 'Sala']).size().reset_index(name='Total_Apresentacoes')
-        resumo_salas.to_excel(writer, sheet_name="Resumo Salas", index=False)
+    # Apenas o CSV Simplificado será gerado, conforme solicitado.
 
     # Salvar CSV Simplificado "horarios_salas_resumos.csv" com Código do Resumo, Bloco, Área e Modalidade
     cols_simplificadas = ['Dia', 'Sessao', 'Turno', 'Horario_Inicio', 'Bloco', 'Sala', 'Ordem', 'Evento', 'Código do Resumo', tit_col, sub_col, 'Área temática', 'Modalidade']
@@ -410,13 +398,7 @@ def gerar_ensalamento(
     print(f"Gerado {output_resumos_csv} com {len(df_resumos)} registros.")
 
 
-    # Atualizar o ZIP com as sessões
-    print("Atualizando ZIP com ensalamentos por sessão...")
-    with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for (dia, sessao), group in df_resultado_final.groupby(['Dia', 'Sessao']):
-            filename = f"{dia}_{sessao.replace(' ', '_')}.csv"
-            csv_data = group.to_csv(index=False, encoding='utf-8-sig', sep=';')
-            zipf.writestr(f"Distribuicao_Horarios/{dia}/{filename}", csv_data)
+    # O ZIP não é mais gerado.
 
     print(f"Total final alocado: {len(df_resultado_final)}")
     return df_resultado_final
