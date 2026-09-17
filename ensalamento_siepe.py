@@ -176,8 +176,16 @@ def gerar_ensalamento(
         return False
     df_curitiba['Is_Demanda01'] = df_curitiba.apply(is_demanda01, axis=1)
 
-    df_prio = df_curitiba[df_curitiba['Is_Demanda01'] | df_curitiba['Is_PET_Litoral'] | df_curitiba['Is_EPEX']].copy()
-    df_outros = df_curitiba[~(df_curitiba['Is_Demanda01'] | df_curitiba['Is_PET_Litoral'] | df_curitiba['Is_EPEX'])].copy()
+    ids_renata = [202626399]
+    def is_renata(row):
+        try:
+            if int(row.get(num_col, 0)) in ids_renata: return True
+        except: pass
+        return False
+    df_curitiba['Is_Renata'] = df_curitiba.apply(is_renata, axis=1)
+
+    df_prio = df_curitiba[df_curitiba['Is_Demanda01'] | df_curitiba['Is_PET_Litoral'] | df_curitiba['Is_EPEX'] | df_curitiba['Is_Renata']].copy()
+    df_outros = df_curitiba[~(df_curitiba['Is_Demanda01'] | df_curitiba['Is_PET_Litoral'] | df_curitiba['Is_EPEX'] | df_curitiba['Is_Renata'])].copy()
     
     sort_cols = ['Modalidade']
     area_col = next((c for c in df_curitiba.columns if 'rea' in c.lower()), 'Área temática')
@@ -222,7 +230,8 @@ def gerar_ensalamento(
     
     df_pet_lit = df_curitiba_selecionados[df_curitiba_selecionados['Is_PET_Litoral']].copy().reset_index(drop=True)
     df_dem01 = df_curitiba_selecionados[df_curitiba_selecionados['Is_Demanda01']].copy().reset_index(drop=True)
-    df_geral = df_curitiba_selecionados[(~df_curitiba_selecionados['Is_PET_Litoral']) & (~df_curitiba_selecionados['Is_Demanda01'])].copy().reset_index(drop=True)
+    df_renata = df_curitiba_selecionados[df_curitiba_selecionados['Is_Renata']].copy().reset_index(drop=True)
+    df_geral = df_curitiba_selecionados[(~df_curitiba_selecionados['Is_PET_Litoral']) & (~df_curitiba_selecionados['Is_Demanda01']) & (~df_curitiba_selecionados['Is_Renata'])].copy().reset_index(drop=True)
 
     dia_pet, sessao_pet_id = "Segunda-feira", 3
     salas_ct = [s for s in salas_curitiba if s[0] == "Ciências da Terra"]
@@ -270,6 +279,26 @@ def gerar_ensalamento(
         apres_id = str(row.get(cpf_col) or row.get(sub_col) or '').strip()
         if apres_id: apresentadores_ocupados.add((dia_dem01, sessao_dem01_id, apres_id))
 
+    dia_ren, sessao_ren_id = "Terça-feira", 1
+    predio_ren, sala_ren = "Ciências Exatas", "PA-04"
+    cap_ren = dict_cap[(dia_ren, sessao_ren_id, predio_ren, sala_ren)]
+    slots_ren = gerar_slots(horarios_sessoes[sessao_ren_id]['inicio'], cap_ren)
+    
+    for ordem, (_, row_data) in enumerate(df_renata.iterrows(), start=1):
+        if ordem > cap_ren: break
+        row = row_data.to_dict()
+        row['Dia'] = dia_ren
+        row['Sessao'] = f"Sessão {sessao_ren_id}"
+        row['Turno'] = horarios_sessoes[sessao_ren_id]['turno']
+        row['Predio'] = predio_ren
+        row['Sala'] = sala_ren
+        row['Ordem'] = ordem
+        row['Horario_Inicio'] = slots_ren[ordem - 1]
+        row['Duracao_Min'] = "20 min (exposição) + 20 min (debate final)" if cap_ren == 4 else "16 min (exposição) + 20 min (debate final)"
+        alocacoes.append(row)
+        apres_id = str(row.get(cpf_col) or row.get(sub_col) or '').strip()
+        if apres_id: apresentadores_ocupados.add((dia_ren, sessao_ren_id, apres_id))
+
     salas_ocupadas_previamente = {}
     for s_idx, (predio, sala) in enumerate(salas_ct):
         cap_sala_local = dict_cap[(dia_pet, sessao_pet_id, predio, sala)]
@@ -277,6 +306,8 @@ def gerar_ensalamento(
         if qtd_alocada > 0: salas_ocupadas_previamente[(dia_pet, sessao_pet_id, predio, sala)] = qtd_alocada
         
     salas_ocupadas_previamente[(dia_dem01, sessao_dem01_id, predio_dem01, sala_dem01)] = len(df_dem01)
+    if len(df_renata) > 0:
+        salas_ocupadas_previamente[(dia_ren, sessao_ren_id, predio_ren, sala_ren)] = len(df_renata)
 
     lista_geral_trabalhos = df_geral.to_dict('records')
     
