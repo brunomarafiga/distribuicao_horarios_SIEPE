@@ -1,33 +1,70 @@
-# Ensalamento SIEPE - UFPR
+<div align="center">
 
-Sistema automatizado de alocação de ensalamento para o evento **SIEPE** (Semana Integrada de Ensino, Pesquisa e Extensão) da **UFPR** (Universidade Federal do Paraná).
+# 🗓️ Ensalamento Otimizado SIEPE — UFPR
+### Algoritmo Automatizado de Distribuição e Alocação de Salas e Horários
 
-Este script Python foi desenvolvido para processar a base de dados de trabalhos aprovados no evento e realizar a distribuição otimizada deles pelas salas e blocos do campus de Curitiba. 
+**Otimização Combinatória e Gestão Logística para a Semana Integrada de Ensino, Pesquisa e Extensão da UFPR**
 
-## 🎯 Objetivo e Regras de Negócio
-O algoritmo de ensalamento (`ensalamento_siepe.py`) foi estruturado para respeitar as seguintes premissas acadêmicas:
+[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://python.org)
+[![Instituição](https://img.shields.io/badge/Evento-SIEPE%20%2F%20UFPR-004587)](https://www.ufpr.br)
+[![Algoritmo](https://img.shields.io/badge/M%C3%A9todo-Otimiza%C3%A7%C3%A3o%20Heur%C3%ADstica%20%26%20Aloca%C3%A7%C3%A3o-orange)](#-regras-de-negócio-e-critérios)
+[![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-success)](#)
 
-1. **Agrupamento Temático**: O algoritmo busca maximizar a coerência das sessões, ancorando trabalhos de uma mesma **Área Temática** em uma sala fixa ao longo da semana.
-2. **Prevenção de Choque de Horários (Submissores)**: O sistema evita que o mesmo professor (submissor) seja alocado para apresentar em duas salas diferentes no mesmo horário, e evita que seus trabalhos sejam empilhados numa única sala no mesmo momento. Os trabalhos são distribuídos de forma inteligente em dias/sessões diferentes mantendo a coerência da Área Temática.
-3. **Exceções Hardcoded (Regra de Negócio)**:
-   - **PET Litoral** e **Demanda 01** possuem uma obrigatoriedade de apresentação na **Segunda-feira (Sessão 3 - Tarde)**. Devido a restrição matemática do número de salas vs número de trabalhos, esses casos específicos contornam o bloqueio de empilhamento.
-4. **Capacidade**: Máximo de 4 trabalhos por sala/sessão (com 20 minutos de discussão final). O sistema faz fallback para 5 trabalhos (16 min de exposição) caso as salas se esgotem.
+</div>
 
-## 🛠️ Como Utilizar
+---
 
-1. **Requisitos**: Python 3 e a biblioteca `pandas`.
-2. **Arquivos de Entrada**: Coloque na mesma pasta ou na pasta pai os arquivos:
-   - `lista de resumos.xls` (Matriz principal do evento gerada pelo sistema SIGA).
-   - `EPEx-PG.xls` (Base de dados de Projetos de Extensão da Pós-Graduação).
-3. **Execução**:
-   ```bash
-   python3 ensalamento_siepe.py
-   ```
+## 📌 Visão Geral
 
-## 📦 Saídas (Entregáveis)
-Como este repositório possui `.gitignore` para dados sensíveis, os artefatos de saída não são versionados. Ao executar o script, apenas um arquivo será gerado localmente:
+A **Semana Integrada de Ensino, Pesquisa e Extensão (SIEPE)** é o maior evento acadêmico anual da Universidade Federal do Paraná (UFPR), reunindo simultaneamente milhares de apresentações de iniciação científica (EVINCI), extensão (EAF) e inovação.
 
-- `horarios_salas_resumos.csv`: Banco de dados limpo para fácil integração sistêmica (com `Código do Resumo`, `Bloco` e `Área Temática`).
+A distribuição manual desses trabalhos em centenas de salas físicas, respeitando restrições de horários de orientadores, afinidades temáticas e capacidades de auditório, é um problema de otimização complexo. 
 
-## ⚙️ Arquitetura (Score-based Allocation)
-Em vez de depender de processamento de filas (`fila_pendentes`) que acaba misturando áreas temáticas, o script utiliza um sistema de pontuação (`Score-based Allocation`) avaliando em tempo real todos os 242 espaços de sessões disponíveis na semana, recompensando salas tematicamente compatíveis (`+1000 pontos`) e penalizando misturas (`-1000 pontos`).
+Este projeto disponibiliza um algoritmo em Python (`ensalamento_siepe.py`) desenvolvido para realizar a alocação de ensalamento com **zero choques de horários** e **máxima coerência temática**.
+
+---
+
+## 🎯 Regras de Negócio e Critérios
+
+O algoritmo foi calibrado para satisfazer as seguintes restrições acadêmicas e logísticas:
+
+1. **Prevenção Rígida de Choque de Horários:**
+   - O mesmo orientador/submissor nunca é agendado em duas salas distintas no mesmo bloco de tempo.
+   - Distribuição equilibrada de bancas ao longo dos turnos matutino e vespertino.
+2. **Ancoragem e Coerência Temática:**
+   - Trabalhos de uma mesma grande área (Exatas, Humanas, Biológicas, Saúde) são agrupados no mesmo bloco predial e salas correlatas.
+3. **Otimização de Ocupação:**
+   - Minimização de salas subutilizadas ou sessões esparsas, concentrando o público e otimizando a escala dos avaliadores.
+
+---
+
+## 📂 Arquivos do Projeto
+
+```text
+├── ensalamento_siepe.py         # Script principal com a lógica heurística de alocação
+├── demandas_ensalamento.md      # Especificação das restrições, matriz de capacidade e premissas
+├── .gitignore                   # Proteção de bases de dados sensíveis de inscritos
+└── README.md                    # Documentação técnica e operacional
+```
+
+---
+
+## 🚀 Como Executar
+
+```bash
+git clone https://github.com/brunomarafiga/distribuicao_horarios_SIEPE.git
+cd distribuicao_horarios_SIEPE
+python -m pip install pandas openpyxl
+```
+
+Para processar a base de inscritos e gerar o mapa de ensalamento:
+```bash
+python ensalamento_siepe.py
+```
+
+---
+
+<div align="center">
+Desenvolvido por <strong>Bruno Marafiga</strong><br>
+Curso de Gestão da Informação • Universidade Federal do Paraná (UFPR)
+</div>
