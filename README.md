@@ -31,3 +31,12 @@ Como este repositório possui `.gitignore` para dados sensíveis, os artefatos d
 
 ## ⚙️ Arquitetura (Score-based Allocation)
 Em vez de depender de processamento de filas (`fila_pendentes`) que acaba misturando áreas temáticas, o script utiliza um sistema de pontuação (`Score-based Allocation`) avaliando em tempo real todos os 242 espaços de sessões disponíveis na semana, recompensando salas tematicamente compatíveis (`+1000 pontos`) e penalizando misturas (`-1000 pontos`).
+
+## Contexto do projeto
+
+- **Categoria:** Automação e otimização
+- **Temas e tecnologias:** Python, pandas, alocação de salas e regras de negócio para eventos acadêmicos
+- **Visibilidade:** Público
+- **Repositório:** <https://github.com/brunomarafiga/distribuicao_horarios_SIEPE>
+
+Este README apresenta o objetivo, a organização e as instruções de uso do projeto. Consulte os arquivos e diretórios do repositório para detalhes de implementação e materiais complementares.
